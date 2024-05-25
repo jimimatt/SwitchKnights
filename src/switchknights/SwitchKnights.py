@@ -1,11 +1,15 @@
-from copy import deepcopy
 import queue
 import time
+from copy import deepcopy
 
 
 class Position:
+    """Position Class."""
 
-    def __init__(self, knight1, knight2, knight3, knight4):
+    __slots__ = ("k1", "k2", "k3", "k4", "position_list")
+
+    def __init__(self, knight1: int, knight2: int, knight3: int, knight4: int) -> None:
+        """Initialize Position Object."""
         self.k1 = knight1
         self.k2 = knight2
         self.k3 = knight3
@@ -13,41 +17,45 @@ class Position:
         self.position_list = []
         self.position_list.append((self.k1, self.k2, self.k3, self.k4))
 
-    def get_coord(self, piece_number):
-        if piece_number == 0:
-            return self.k1
-        if piece_number == 1:
-            return self.k2
-        if piece_number == 2:
-            return self.k3
-        if piece_number == 3:
-            return self.k4
+    def get_coord(self, piece_number: int) -> int:
+        """Get coordinate of the knight piece."""
+        match piece_number:
+            case 0:
+                return self.k1
+            case 1:
+                return self.k2
+            case 2:
+                return self.k3
+            case 3:
+                return self.k4
         return -1
 
-    def set_coord(self, piece_number, new_coord):
-        if piece_number == 0:
-            self.k1 = new_coord
-        elif piece_number == 1:
-            self.k2 = new_coord
-        elif piece_number == 2:
-            self.k3 = new_coord
-        elif piece_number == 3:
-            self.k4 = new_coord
-        else:
-            print("Fehler in set_coord()")
+    def set_coord(self, piece_number: int, new_coord: int) -> None:
+        """Set the coordinate for the knight piece."""
+        match piece_number:
+            case 0:
+                self.k1 = new_coord
+            case 1:
+                self.k2 = new_coord
+            case 2:
+                self.k3 = new_coord
+            case 3:
+                self.k4 = new_coord
         self.position_list.append((self.k1, self.k2, self.k3, self.k4))
 
-    def print_trace(self):
+    def print_trace(self) -> None:
+        """Print the solution."""
         for pos in self.position_list:
-            # print(self.decode_pos_str(pos))
             print(pos)
             print(Position.decode_pos_t(pos))
 
-    def move_count(self):
+    def move_count(self) -> int:
+        """Get move count."""
         return len(self.position_list) - 1
 
     @staticmethod
-    def decode_pos_t(pos_t):
+    def decode_pos_t(pos_t: tuple[int, int, int, int]) -> str:
+        """Decode position."""
         field = ["." for _ in range(9)]
         field[pos_t[0]] = "W"
         field[pos_t[1]] = "W"
@@ -56,11 +64,12 @@ class Position:
         output_str = ""
         for i in range(9):
             output_str = output_str + field[i] + " "
-            if (i+1) % 3 == 0:
+            if (i + 1) % 3 == 0:
                 output_str = output_str + "\n"
         return output_str
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """To string of Position class."""
         if self.k1 > self.k2:
             output_str = str(self.k2) + str(self.k1)
         else:
@@ -73,8 +82,10 @@ class Position:
 
 
 class Chessboard:
+    """Chessboard class."""
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize Chessboard."""
         self.possible_moves = []
         self.possible_moves.append([1, 2])
         self.possible_moves.append([2, 3])
@@ -86,43 +97,46 @@ class Chessboard:
         self.possible_moves.append([6, 7])
         self.possible_moves.append([5, 6])
 
-    def get_moves(self, coord):
-        # if coord < 0 or coord > 8:
-        #     print("Bullshit: coord = " + str(coord))
+    def get_moves(self, coord: int) -> list[int]:
+        """Get moves for coordinate."""
         return self.possible_moves[coord]
 
     @staticmethod
-    def knights_move(variation, coord):
-        if variation == 1 or variation == 3:
-            return coord + 5
-        elif variation == 2:
-            return coord + 7
-        elif variation == 4:
-            return coord + 1
-        elif variation == 5 or variation == 7:
-            return coord - 5
-        elif variation == 6:
-            return coord - 7
-        elif variation == 8:
-            return coord - 1
+    def knights_move(variation: int, coord: int) -> int:
+        """Knights move."""
+        match variation:
+            case 1 | 3:
+                return coord + 5
+            case 2:
+                return coord + 7
+            case 4:
+                return coord + 1
+            case 5 | 7:
+                return coord - 5
+            case 6:
+                return coord - 7
+            case 8:
+                return coord - 1
         return -1
 
 
 class SwapKnights:
+    """SwapKnights class."""
 
-    def __init__(self):
-        self.processed_positions = set([])
-        self.board = Chessboard()
+    def __init__(self) -> None:
+        """Initialize SwapKnights."""
+        self.processed_positions: set[str] = set()
+        self.board: Chessboard = Chessboard()
         self.solve()
 
-    def solve(self):
+    def solve(self) -> None:
+        """Solve the knights puzzle."""
         positions = queue.Queue()
         positions.put(Position(0, 2, 6, 8))
         while not positions.empty():
             pos = positions.get()
             if str(pos) == "6802":
-                print("Lösung gefunden:")
-                print("in " + str(pos.move_count()) + " Zügen:")
+                print(f"Solution found: {pos.move_count()} moves")
                 pos.print_trace()
                 break
             elif str(pos) in self.processed_positions:
@@ -134,7 +148,9 @@ class SwapKnights:
                     coord = pos.get_coord(piece)
                     possible_moves = self.board.get_moves(coord)
                     for possible_move in possible_moves:
-                        new_coord = Chessboard.knights_move(possible_move, pos.get_coord(piece))
+                        new_coord = Chessboard.knights_move(
+                            possible_move, pos.get_coord(piece)
+                        )
                         if str(pos).count(str(new_coord)) == 0:
                             new_pos = deepcopy(pos)
                             new_pos.set_coord(piece, new_coord)
@@ -145,4 +161,4 @@ if __name__ == "__main__":
     calc_time = time.time()
     chess = SwapKnights()
     calc_time = round((time.time() - calc_time), 2)
-    print(str(calc_time) + "s zur Berechnung benötigt.")
+    print(f"Computing time {calc_time}s")
