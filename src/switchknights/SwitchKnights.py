@@ -135,12 +135,12 @@ class SwapKnights:
         positions.put(Position(0, 2, 6, 8))
         while not positions.empty():
             pos = positions.get()
-            if str(pos) == "6802":
+            if (pos_str := str(pos)) == "6802" or pos_str == '8602' or pos_str == '6820' or pos_str == '8620':
                 print(f"Solution found: {pos.move_count()} moves")
                 pos.print_trace()
                 break
             elif str(pos) in self.processed_positions:
-                pass
+                continue
             else:
                 self.processed_positions.add(str(pos))
                 # move 4 pieces
@@ -160,5 +160,4 @@ class SwapKnights:
 if __name__ == "__main__":
     calc_time = time.time()
     chess = SwapKnights()
-    calc_time = round((time.time() - calc_time), 2)
-    print(f"Computing time {calc_time}s")
+    print(f"Computing time {time.time() - calc_time:.4f}s")
