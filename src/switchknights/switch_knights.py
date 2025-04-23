@@ -42,9 +42,7 @@ class TurnOrder:
         black_knight_2: Coord,
     ) -> None:
         """Initialize Position Object."""
-        self.position = KnightPosition(
-            white_knight_1, white_knight_2, black_knight_1, black_knight_2
-        )
+        self.position = KnightPosition(white_knight_1, white_knight_2, black_knight_1, black_knight_2)
         self.position_list = [
             self.position,
         ]
@@ -125,10 +123,7 @@ class Chessboard:
     @staticmethod
     def get_moves(coord: Coord) -> list[Coord]:
         """Get moves for coordinate."""
-        return [
-            Coord(coord + possible_move)
-            for possible_move in Chessboard.possible_moves[coord]
-        ]
+        return [Coord(coord + possible_move) for possible_move in Chessboard.possible_moves[coord]]
 
 
 class SwapKnights:
@@ -144,9 +139,7 @@ class SwapKnights:
     def __init__(self) -> None:
         """Initialize SwapKnights."""
         self.processed_positions: set[KnightPosition] = set()
-        self.win_condition: KnightPosition = KnightPosition(
-            Coord(0), Coord(2), Coord(6), Coord(8)
-        )
+        self.win_condition: KnightPosition = KnightPosition(Coord(0), Coord(2), Coord(6), Coord(8))
         if (solution := self.solve()) is not None:
             print(f"Solution found: {solution.move_count()} moves")
             solution.print_trace()
@@ -174,14 +167,16 @@ class SwapKnights:
                             new_position_values = list(pos.position)
                             new_position_values[piece.value] = new_coord
                             new_pos = TurnOrder(*new_position_values)
-                            new_pos.position_list = pos.position_list + [
-                                new_pos.position
-                            ]
+                            new_pos.position_list = pos.position_list + [new_pos.position]
                             positions.append(new_pos)
         return None
 
 
-if __name__ == "__main__":
+def main() -> None:
     calc_time = time.time()
-    chess = SwapKnights()
+    SwapKnights()
     print(f"Computing time {time.time() - calc_time:.4f}s")
+
+
+if __name__ == "__main__":
+    main()
